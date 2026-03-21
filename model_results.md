@@ -10,7 +10,8 @@ All evaluations use a static 3-second evaluation window (center-cropped) and cal
 | **ResNet-18**      | Contrastive Loss (L2)  | 30     | 11M    | *Not Tracked*     | 80.61%        | *N/A*              | Baseline system. Proved viability of 80 Mel-bin spectrograms. |
 | **ResNet-34**      | Contrastive Loss (L2)  | 30     | 21M    | 92.42%            | 82.41%        | 10.01%             | Good embedding separation but clear overfitting on training set (10% gap). |
 | **ResNet-50**      | Contrastive Loss (L2)  | 30     | 23M    | 92.53%            | 84.15%        | 8.38%              | Best performance for 3s window. Deeper model generalized better. |
-| **ResNet-34**      | Cosine Contrastive (5s)| 25     | 21M    | 97.63%            | 86.63%        | 11.00%             | **NEW BEST**. Using 5s clips + Cosine distance significantly improves feature robustness. |
+| **ResNet-34**      | Cosine Contrastive (5s)| 25     | 21M    | 97.63%            | 86.63%        | 11.00%             | Using 5s clips + Cosine distance significantly improved performance. |
+| **ResNet-50**      | Cosine Contrastive (5s)| 25     | 23M    | 95.66%            | **86.78%**    | **8.88%**          | **NEW BEST**. Minimal absolute gain over R34, but **Generalisation Gap** improved significantly. |
 | **ResNet-34**      | Cosine Triplet Loss    | 30     | 21M    | *Running*         | *Pending*     | *Pending*          | Now testing if Triplet Margin can push past 87% with the 5s window. |
 
 ---
@@ -39,6 +40,12 @@ All evaluations use a static 3-second evaluation window (center-cropped) and cal
 - **Result:** **97.63%** Training / **86.63%** Testing.
 - **Analysis:** This run represents a major breakthrough. By increasing the audio duration from 3s to 5s, we gave the model 66% more context per speaker, which stabilized the embeddings. The switch to **Cosine Distance** also allowed the model to focus purely on the angle of the speaker features rather than absolute magnitude. Training accuracy hit near-perfect levels, and test accuracy jumped to **86.6%**, which is the current state-of-the-art for our project.
 
-### Experiment 5 (In Progress): Adding Triplet Margin
-- **Status:** Currently training.
-- **Expected Outcome:** Combining the 5s context with **Triplet Margin Loss** should perform better than Contrastive Loss by pushing "imposter" speakers further away from the anchor relative to the positive pair. 
+### Experiment 5: ResNet-50 + 5s Clips + Cosine Loss
+- **Configuration:** ResNet50 -> 256 embedding dimension. 5.0s audio window. Cosine Contrastive Loss.
+- **Learning Rate:** 1e-3 (Adam)
+- **Result:** **95.66%** Training / **86.78%** Testing.
+- **Analysis:** While the absolute improvement in test accuracy was only **+0.15%** compared to ResNet-34, a critical discovery was made regarding **Generalization**. The "Gap" dropped from 11.00% to **8.88%**. This indicates that the deeper ResNet-50 architecture is learning more robust, universal speaker features and is less prone to "memorizing" specific training samples. It suggests we have hit a performance ceiling for the current Contrastive Loss function.
+
+### Experiment 6 (In Progress): Adding Triplet Margin
+- **Status:** Currently training (ResNet-34 version).
+- **Expected Outcome:** Triplet Loss is needed to break this plateau by forcing a relative distance constraint.
