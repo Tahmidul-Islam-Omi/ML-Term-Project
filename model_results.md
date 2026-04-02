@@ -12,7 +12,7 @@ All evaluations use a static 3-second evaluation window (center-cropped) and cal
 | **ResNet-50**      | Contrastive Loss (L2)  | 30     | 23M    | 92.53%            | 84.15%        | 8.38%              | Best performance for 3s window. Deeper model generalized better. |
 | **ResNet-34**      | Cosine Contrastive (5s)| 25     | 21M    | 97.63%            | 86.63%        | 11.00%             | Using 5s clips + Cosine distance significantly improved performance. |
 | **ResNet-50**      | Cosine Contrastive (5s)| 25     | 23M    | 95.66%            | **86.78%**    | **8.88%**          | **NEW BEST**. Minimal absolute gain over R34, but **Generalisation Gap** improved significantly. |
-| **ResNet-34**      | Cosine Triplet Loss    | 30     | 21M    | *Running*         | *Pending*     | *Pending*          | Now testing if Triplet Margin can push past 87% with the 5s window. |
+| **ResNet-34**      | Cosine Triplet Loss    | 30     | 21M    | 97.84%            | **91.83%**    | 6.01%              | **NEW OVERALL BEST**. Triplet Loss effectively pushed accuracy over 91%. |
 
 ---
 
@@ -46,6 +46,8 @@ All evaluations use a static 3-second evaluation window (center-cropped) and cal
 - **Result:** **95.66%** Training / **86.78%** Testing.
 - **Analysis:** While the absolute improvement in test accuracy was only **+0.15%** compared to ResNet-34, a critical discovery was made regarding **Generalization**. The "Gap" dropped from 11.00% to **8.88%**. This indicates that the deeper ResNet-50 architecture is learning more robust, universal speaker features and is less prone to "memorizing" specific training samples. It suggests we have hit a performance ceiling for the current Contrastive Loss function.
 
-### Experiment 6 (In Progress): Adding Triplet Margin
-- **Status:** Currently training (ResNet-34 version).
-- **Expected Outcome:** Triplet Loss is needed to break this plateau by forcing a relative distance constraint.
+### Experiment 6: ResNet-34 + 5s Clips + Cosine Triplet Loss
+- **Configuration:** ResNet34 -> 256 embedding dimension. 5.0s audio window. Cosine Triplet Loss.
+- **Learning Rate:** 1e-4 (AdamW)
+- **Result:** **97.84%** Training / **91.83%** Testing.
+- **Analysis:** **New Overall Best.** The introduction of Triplet Loss with the 5s window and Cosine Distance significantly improved performance, resulting in a test accuracy of over 91%. The generalization gap is also relatively low at 6.01%, indicating a good balance.
